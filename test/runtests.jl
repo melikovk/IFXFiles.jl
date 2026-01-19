@@ -154,7 +154,7 @@ using DataFrames
 
         @test size(df) == (1, 4)
         @test names(df) == ["A", "B", "C", "D"]
-        @test df[1, :] == [1, 2, 3, 4]
+        @test copy(df[1, :]) == (A=1, B=2, C=3, D=4)
     end
 
     @testset "Multiple spaces as delimiter" begin
@@ -235,11 +235,8 @@ using DataFrames
             [Data]
             """)
 
-        df = IFXFiles.read(io)
+        @test_throws "There is no data" df = IFXFiles.read(io)
 
-        @test size(df) == (0, 2)
-        @test names(df) == ["X", "Y"]
-        @test isempty(df)
     end
 
     @testset "Column count validation" begin

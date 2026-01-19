@@ -22,6 +22,10 @@ function read(stream::IO)::DataFrame
         error("Could not find Columns= line in header")
     end
 
+    if eof(stream)
+        error("There is no data")
+    end
+
     # Read the CSV starting from the data section
     df = CSV.read(
         stream,
