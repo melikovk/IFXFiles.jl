@@ -1,5 +1,7 @@
 module IFXFiles
 
+using CSV, DataFrames
+
 function read(stream::IO)::DataFrame
     metadata = Dict{String,String}()
     # read header into metadata dictionary
