@@ -235,24 +235,29 @@ using DataFrames
             [Data]
             """)
 
-        @test_throws "There is no data" df = IFXFiles.read(io)
-
+        @test_throws "There is no data" IFXFiles.read(io)
     end
 
-    @testset "Column count validation" begin
+    @testset "No Columns key in the header" begin
         io = IOBuffer("""
-            Columns=A,B,C
 
             [Data]
             1 2 3
             4 5 6
             """)
 
-        df = IFXFiles.read(io)
+        @test_throws "No Columns= line in the header" IFXFiles.read(io)
+    end
 
-        # Verify column count matches Columns specification
-        @test ncol(df) == 3
-        @test ncol(df) == length(split(metadata(df, "Columns"), ","))
+    @testset "Invalid header line" begin
+        io = IOBuffer("""
+            Columns 
+            [Data]
+            1 2 3
+            4 5 6
+            """)
+
+        @test_throws "Invalid line in the header" IFXFiles.read(io)
     end
 
     @testset "All metadata keys present" begin

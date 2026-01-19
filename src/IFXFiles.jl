@@ -12,14 +12,18 @@ function read(stream::IO)::DataFrame
         elseif startswith(stripped, "[Data]")
             break # [Data] markers end the header section
         else
-            push!(metadata, Pair(split(stripped, "=", limit=2, keepempty=true)...))
+            key_val_tuple = split(stripped, "=", limit=2, keepempty=true)
+            if length(key_val_tuple) < 2
+                error("Invalid line in the header")
+            end
+            push!(metadata, Pair(key_val_tuple...))
         end
     end
 
     if haskey(metadata, "Columns")
         column_names = String.(strip.(split(metadata["Columns"], ',')))
     else
-        error("Could not find Columns= line in header")
+        error("No Columns= line in the header")
     end
 
     if eof(stream)
